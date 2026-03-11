@@ -1,0 +1,38 @@
+"""Aider execution agent."""
+
+from __future__ import annotations
+
+import subprocess
+
+from .base import ExecutionAgent
+
+
+class AiderExecutionAgent(ExecutionAgent):
+    def __init__(self, model: str = "openai/gpt-4o") -> None:
+        self.model = model
+
+    def run_plan(self, workspace_path: str, plan_text: str) -> int:
+        prompt = (
+            "Follow this approved implementation plan exactly. "
+            "Modify code in the current workspace and stop when done.\n\n"
+            f"{plan_text}"
+        )
+        result = subprocess.run(
+            ["aider", "--model", self.model, "--message", prompt],
+            cwd=workspace_path,
+            check=False,
+        )
+        return result.returncode
+
+    def send_followup(self, workspace_path: str, error_text: str) -> int:
+        prompt = (
+            "The last implementation attempt failed validation. "
+            "Fix the code in the current workspace using this failure output.\n\n"
+            f"{error_text}"
+        )
+        result = subprocess.run(
+            ["aider", "--model", self.model, "--message", prompt],
+            cwd=workspace_path,
+            check=False,
+        )
+        return result.returncode

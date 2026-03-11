@@ -1,0 +1,51 @@
+project:
+  default_branch: "main"
+
+# ═══════════ COUNCIL MEMBERS ═══════════
+council_members:
+  # ── Moonshot KIMI via OpenRouter (uses OPENROUTER_API_KEY from .env) ──
+  - name: "KIMI-K2.5"
+    engine: "litellm"
+    model: "openrouter/moonshotai/kimi-k2.5"
+    timeout_seconds: 300
+    enabled: true
+
+  # ── xAI Grok via OpenRouter (uses OPENROUTER_API_KEY from .env) ──
+  - name: "Grok-4.1-Fast"
+    engine: "litellm"
+    model: "openrouter/x-ai/grok-4.1-fast"
+    timeout_seconds: 120
+    enabled: true
+
+  # ── DeepSeek via OpenRouter (uses OPENROUTER_API_KEY from .env) ──
+  - name: "DeepSeek-V3.2"
+    engine: "litellm"
+    model: "openrouter/deepseek/deepseek-v3.2"
+    timeout_seconds: 120
+    enabled: true
+
+  # ── Zhipu GLM via Z.AI Anthropic-compatible endpoint ──
+  - name: "GLM-4.7"
+    engine: "litellm"
+    model: "anthropic/glm-4.7"
+    api_base: "https://api.z.ai/api/anthropic"
+    api_key_env: "ZAI_API_KEY"
+    timeout_seconds: 120
+    enabled: true
+
+# ═══════════ CHAIRMAN ═══════════
+chairman:
+  name: "Chairman-GPT-5.4"
+  engine: "opencode_cli"
+  model: ""                         # uses OpenCode's default logged-in model
+  timeout_seconds: 240
+  enabled: true
+
+# ═══════════ EXECUTOR ═══════════
+executor:
+  agent: "opencode"
+  model: ""
+  test_command: ["pytest"]
+  max_retries: 3
+  auto_commit: true
+  auto_push: false

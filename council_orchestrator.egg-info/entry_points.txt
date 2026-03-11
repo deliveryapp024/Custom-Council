@@ -1,0 +1,2 @@
+[console_scripts]
+council-orchestrator = council_orchestrator.main:main

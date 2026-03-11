@@ -1,0 +1,24 @@
+[project]
+name = "council-orchestrator"
+version = "0.1.0"
+description = "Hybrid council-driven coding orchestrator"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "litellm>=1.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+    "typer>=0.9.0",
+    "fastapi>=0.100",
+    "uvicorn>=0.20",
+    "sse-starlette>=1.6",
+]
+
+[project.scripts]
+council-orchestrator = "council_orchestrator.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

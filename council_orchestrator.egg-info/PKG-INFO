@@ -1,0 +1,28 @@
+Metadata-Version: 2.4
+Name: council-orchestrator
+Version: 0.1.0
+Summary: Hybrid council-driven coding orchestrator
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: litellm>=1.0
+Requires-Dist: pydantic>=2.0
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: rich>=13.0
+Requires-Dist: typer>=0.9.0
+
+# Council Orchestrator
+
+Standalone Python CLI for a hybrid planning council and code execution loop.
+
+## Layout
+
+- `config.yml` for model, chairman, and executor settings
+- `council_orchestrator/` for the Python package
+- `data/` for runtime plans and run logs
+
+## Run
+
+```bash
+python -m council_orchestrator.main run "Add a hello world function" --project-path path/to/repo
+```
