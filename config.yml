@@ -49,3 +49,132 @@ executor:
   max_retries: 3
   auto_commit: true
   auto_push: false
+
+# Static agent registry used for semi-automatic task routing
+agents:
+  - id: "builder-opencode"
+    display_name: "Builder (OpenCode)"
+    executor_type: "opencode"
+    model_override: ""
+    enabled_skills: ["*"]
+    allowed_workflows: ["execute"]
+    qa_capable: false
+
+  - id: "qa-opencode"
+    display_name: "QA Reviewer (OpenCode)"
+    executor_type: "opencode"
+    model_override: ""
+    enabled_skills: ["*"]
+    allowed_workflows: ["qa"]
+    qa_capable: true
+
+# Static skill catalog; council may recommend from this set only
+skills:
+  - id: "python-refactor"
+    name: "Python Refactor"
+    description: "Refactor Python modules while preserving behavior."
+    tags: ["python", "refactor", "cleanup"]
+    prompt_preamble: "Focus on safe Python refactoring and preserve behavior."
+    allowed_agents: ["builder-opencode", "qa-opencode"]
+
+  - id: "tests"
+    name: "Test Coverage"
+    description: "Add or improve tests for changed behavior."
+    tags: ["test", "pytest", "validation"]
+    prompt_preamble: "Review tests, missing coverage, and validation gaps."
+    allowed_agents: ["builder-opencode", "qa-opencode"]
+
+  - id: "api-review"
+    name: "API Review"
+    description: "Review API contracts, serialization, and edge cases."
+    tags: ["api", "schema", "contract"]
+    prompt_preamble: "Check request/response shapes, state transitions, and API edge cases."
+    allowed_agents: ["builder-opencode", "qa-opencode"]
+
+  - id: "security-check"
+    name: "Security Check"
+    description: "Review auth, validation, and unsafe operations."
+    tags: ["security", "validation", "auth"]
+    prompt_preamble: "Look for validation gaps, unsafe shell usage, and access-control mistakes."
+    allowed_agents: ["qa-opencode"]
+
+skill_sources:
+  - path: "C:/Users/arali/.codex/skills"
+    source_name: "codex"
+    recursive: true
+  - path: "C:/Users/arali/.claude/skills"
+    source_name: "claude"
+    recursive: true
+
+task_generation:
+  max_tasks: 5
+  sequential_only: true
+
+qa:
+  reviewer_agent_id: "qa-opencode"
+  blocking_severities: ["critical", "high"]
+
+project_profiles:
+  - id: "council-orchestrator"
+    name: "Council Orchestrator"
+    root_paths:
+      - "C:/Users/arali/OneDrive/Documents/Playground/council-orchestrator"
+    enabled_mcp_servers: ["github", "supabase-local", "supabase-remote"]
+    default_skill_ids: ["api-review", "tests"]
+
+mcp_servers:
+  - id: "github"
+    display_name: "GitHub MCP"
+    transport: "http"
+    command: ""
+    args: []
+    env: {}
+    url: "https://api.githubcopilot.com/mcp/"
+    headers:
+      Authorization: "Bearer ${GITHUB_PAT}"
+    enabled: false
+    project_ids: ["council-orchestrator"]
+    required_env: ["GITHUB_PAT"]
+    requires_approval_for_tools:
+      - "create_issue"
+      - "create_pull_request"
+      - "merge_pull_request"
+      - "push_files"
+    notes: "Official GitHub remote MCP endpoint. Set GITHUB_PAT in .env before enabling."
+
+  - id: "supabase-local"
+    display_name: "Supabase Local MCP"
+    transport: "http"
+    command: ""
+    args: []
+    env: {}
+    url: "http://127.0.0.1:54321/mcp"
+    headers: {}
+    enabled: false
+    project_ids: ["council-orchestrator"]
+    required_env: []
+    requires_approval_for_tools:
+      - "apply_migration"
+      - "execute_sql"
+      - "update_table"
+      - "delete_row"
+    notes: "Official local Supabase MCP endpoint when running local Supabase services."
+
+  - id: "supabase-remote"
+    display_name: "Supabase Remote MCP"
+    transport: "http"
+    command: ""
+    args: []
+    env: {}
+    url: "https://mcp.supabase.com/mcp?project_ref=${SUPABASE_PROJECT_REF}&read_only=${SUPABASE_MCP_READ_ONLY}"
+    headers:
+      Authorization: "Bearer ${SUPABASE_ACCESS_TOKEN}"
+    enabled: false
+    project_ids: ["council-orchestrator"]
+    required_env: ["SUPABASE_ACCESS_TOKEN", "SUPABASE_PROJECT_REF"]
+    requires_approval_for_tools:
+      - "apply_migration"
+      - "execute_sql"
+      - "update_table"
+      - "delete_row"
+    notes: "Official hosted Supabase MCP endpoint for custom clients. Set SUPABASE_ACCESS_TOKEN in .env and keep the server scoped with SUPABASE_PROJECT_REF."

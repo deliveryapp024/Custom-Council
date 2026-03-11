@@ -77,10 +77,10 @@ async def _run_pipeline(task: str, project_path: str, config) -> None:
 
     print(f"Phase 4: Executing approved plan from {approved_plan_file}...")
     executor = get_executor(config.executor)
-    exit_code = executor.run_plan(worktree, final_plan)
-    if exit_code != 0:
+    result = executor.run_plan(worktree, final_plan)
+    if result.exit_code != 0:
         raise RuntimeError(
-            f"Executor exited with code {exit_code}. Aborting before tests."
+            f"Executor exited with code {result.exit_code}. Aborting before tests."
         )
 
     print("Phase 5: Running tests...")

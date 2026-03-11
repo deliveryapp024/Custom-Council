@@ -32,9 +32,11 @@ def run_test_loop(
 
         if attempt < max_retries:
             print("Sending failure output back to the executor.")
-            fix_exit = executor.send_followup(workspace_path, error_output[-3000:])
-            if fix_exit != 0:
-                print(f"Executor fix attempt also failed with exit code {fix_exit}.")
+            fix_result = executor.send_followup(workspace_path, error_output[-3000:])
+            if fix_result.exit_code != 0:
+                print(
+                    f"Executor fix attempt also failed with exit code {fix_result.exit_code}."
+                )
 
     print("Max retries reached. Tests are still failing.")
     return False
